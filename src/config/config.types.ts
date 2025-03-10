@@ -4,10 +4,8 @@ export enum NodeEnvironments {
   PRODUCTION = 'production',
 }
 
-export function getEnv(environment?: string) {
-  return Object.values(NodeEnvironments).includes(
-    environment as NodeEnvironments,
-  )
-    ? (environment as NodeEnvironments)
-    : NodeEnvironments.PRODUCTION;
+export enum GoogleBuckets {
+  DEVELOPMENT_BUCKET = 'dev-studies-bucket',
+  STAGING_BUCKET = 'stg-studies-bucket',
+  PRODUCTION_BUCKET = 'prd-studies-bucket',
 }
