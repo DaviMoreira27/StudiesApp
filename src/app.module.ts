@@ -7,12 +7,18 @@ import { MessagingService } from './facade/messaging/messaging.service';
 import { StorageService } from './facade/storage/storage.service';
 import { NotesService } from './facade/notes/notes.service';
 import config from './config/config';
+import { HttpModule } from '@nestjs/axios';
+import { Storage } from '@google-cloud/storage';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
+    }),
+    HttpModule.register({
+      timeout: 20000,
+      maxRedirects: 5,
     }),
   ],
   controllers: [],
@@ -23,6 +29,7 @@ import config from './config/config';
     MessagingService,
     StorageService,
     NotesService,
+    Storage,
   ],
 })
 export class AppModule {}
