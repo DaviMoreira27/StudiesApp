@@ -4,7 +4,7 @@
 
 # Description
 
-Multiplatform chat to handle classes images and information
+A multi-platform chat system that facilitates the management of class-related images and information. Users can send images through various messaging platforms, and these images, along with any associated text, will be stored and organized in Notion for easy access and future reference.
 
 # Principal commands
 
@@ -58,4 +58,4 @@ $ yarn run test:cov
 
 ## Done
 
-- [x] Project Scaffold
+- [x] Project scaffold
