@@ -14,10 +14,13 @@ export class GoogleStorageService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly googleStorage: Storage,
     private readonly httpService: HttpService,
   ) {
-    this.bucket = this.googleStorage.bucket(this.configService.get<string>('googleBucket')!);
+    const storage = new Storage({
+      keyFilename: this.configService.get<string>('googleAccountCredentials'),
+    });
+
+    this.bucket = storage.bucket(this.configService.get<string>('googleBucket')!);
   }
 
   uploadFile(fileUrl: string, filePath: string): Observable<string> {

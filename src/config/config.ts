@@ -4,12 +4,11 @@ export default () => ({
   environment: getEnv(process.env.NODE_ENV),
   port: parseInt(process.env.PORT || '3000', 10),
   googleBucket: getBucket(getEnv(process.env.NODE_ENV)),
+  googleAccountCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS ?? '',
 });
 
 function getEnv(environment?: string) {
-  return Object.values(NodeEnvironments).includes(
-    environment as NodeEnvironments,
-  )
+  return Object.values(NodeEnvironments).includes(environment as NodeEnvironments)
     ? (environment as NodeEnvironments)
     : NodeEnvironments.DEVELOPMENT;
 }
