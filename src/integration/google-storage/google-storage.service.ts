@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
-import { from, map, Observable, Subscription, switchMap } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 import Stream from 'stream';
 import { GoogleStorageFilterObject } from './google-storage.types';
 
@@ -15,12 +15,9 @@ export class GoogleStorageService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
+    private readonly googleStorage: Storage,
   ) {
-    const storage = new Storage({
-      keyFilename: this.configService.get<string>('googleAccountCredentials'),
-    });
-
-    this.bucket = storage.bucket(this.configService.get<string>('googleBucket')!);
+    this.bucket = this.googleStorage.bucket(this.configService.get<string>('googleBucket')!);
   }
 
   uploadFile(fileUrl: string, filePath: string): Observable<string> {
@@ -62,7 +59,7 @@ export class GoogleStorageService {
     });
   }
 
-  getAllFiles(startDate?: Date, endDate?: Date, subject?: string): Subscription {
+  getAllFiles(startDate?: Date, endDate?: Date, subject?: string): Observable<File[]> {
     const filterObject: Observable<GoogleStorageFilterObject> = from(this.bucket.getMetadata()).pipe(
       map(([metadata]) => ({
         startDate: startDate?.getTime() ?? Date.parse(metadata?.timeCreated ?? ''),
@@ -71,26 +68,21 @@ export class GoogleStorageService {
       })),
     );
 
-    return filterObject
-      .pipe(
-        switchMap((filterObject) =>
-          from(this.bucket.getFiles({ prefix: `${this.initialImageFilePath}/${filterObject.subject}` })).pipe(
-            map(([files]) => {
-              if (!startDate && !endDate) {
-                return files;
-              }
-              return files.filter(
-                (file) =>
-                  Number(file.metadata.timeCreated) >= filterObject.startDate &&
-                  Number(file.metadata.timeCreated) <= filterObject.endDate,
-              );
-            }),
-          ),
+    return filterObject.pipe(
+      switchMap((filterObject) =>
+        from(this.bucket.getFiles({ prefix: `${this.initialImageFilePath}/${filterObject.subject}` })).pipe(
+          map(([files]) => {
+            if (!startDate && !endDate) {
+              return files;
+            }
+            return files.filter(
+              (file) =>
+                Number(file.metadata.timeCreated) >= filterObject.startDate &&
+                Number(file.metadata.timeCreated) <= filterObject.endDate,
+            );
+          }),
         ),
-      )
-      .subscribe({
-        next: (filteredFiles: File[]) => filteredFiles,
-        error: (err) => console.error('Error fetching files:', err),
-      });
+      ),
+    );
   }
 }
