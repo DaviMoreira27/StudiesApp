@@ -29,7 +29,7 @@ describe('GoogleStorageService', () => {
 
     // Defining the Google Storage class mock, we are saying that for the bucket property
     // it will return a mocked value defined by bucketMock that we assigned earlier
-    const storageMock = {
+    const storageMock: Partial<Storage> = {
       bucket: jest.fn().mockReturnValue(bucketMock),
     };
 
@@ -72,16 +72,8 @@ describe('GoogleStorageService', () => {
     const startDate = new Date('2024-03-11T00:00:00Z');
     const endDate = new Date('2024-03-12T23:59:59Z');
 
-    // https://jestjs.io/docs/jest-object#jestspyonobject-methodname -> Needs further reading
-    // jest.spyOn(service, 'getAllFiles').mockImplementation(() => {
-    //   return of([
-    //     { metadata: { timeCreated: '2024-03-11T12:00:00Z' } } as File,
-    //     { metadata: { timeCreated: '2024-03-12T12:00:00Z' } } as File,
-    //   ]);
-    // });
-
     service.getAllFiles(startDate, endDate).subscribe({
-      next: (files) => {
+      next: (files: File[]) => {
         console.log('FILES', files);
         expect(files.length).toBe(2);
         expect(bucketMock.getMetadata).toHaveBeenCalled();

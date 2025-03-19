@@ -75,10 +75,11 @@ export class GoogleStorageService {
             if (!startDate && !endDate) {
               return files;
             }
+
             return files.filter(
               (file) =>
-                Number(file.metadata.timeCreated) >= filterObject.startDate &&
-                Number(file.metadata.timeCreated) <= filterObject.endDate,
+                new Date(file.metadata.timeCreated ?? '').getTime() >= filterObject.startDate &&
+                new Date(file.metadata.timeCreated ?? '').getTime() <= filterObject.endDate,
             );
           }),
         ),
