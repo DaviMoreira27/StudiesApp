@@ -40,32 +40,6 @@ describe('GoogleStorageService', () => {
       }),
     };
 
-     httpServiceMock = {
-       get: jest.fn().mockImplementation(() => {
-         // Create a mock Observable that emulates a successful HTTP response with a stream
-         const mockStream = new Writable({
-           write(chunk, encoding, callback) {
-             callback();
-           },
-         });
-
-         mockStream.pipe = jest.fn().mockImplementation((destination) => {
-           setTimeout(() => {
-             destination.emit('finish');
-           }, 100);
-           return destination;
-         });
-
-         return of({
-           data: mockStream,
-           status: 200,
-           statusText: 'OK',
-           headers: {},
-           config: {} as any,
-         });
-       }),
-     };
-
     // Mocking the Google Storage Bucket class, because its define as partial we only have to inform the 2 methods that we will use
     bucketMock = {
       // getMetadata: an async mocked function that will return an array with a timeCreated object when resolved
@@ -114,7 +88,6 @@ describe('GoogleStorageService', () => {
         GoogleStorageService,
         { provide: ConfigService, useValue: configServiceMock },
         { provide: Storage, useFactory: () => storageMock },
-        { provide: HttpService, useValue: httpServiceMock },
       ],
     }).compile();
 
@@ -127,53 +100,60 @@ describe('GoogleStorageService', () => {
     expect(service).toBeDefined();
   });
 
-  // it('should throw an error if the file to upload is not accessible', (done) => {
-  //   const fileUrl = 'https://fastl.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
-  //   const filePath = 'notion/subjects/images/software-requirements/';
-  //   service.uploadFile(fileUrl, filePath).subscribe({
-  //     next: () => {
-  //       console.log('Sucess');
-  //       done();
-  //     },
-  //     error: (error: Error) => {
-  //       console.log('Error message returned', error.message);
-  //       done();
-  //     },
-  //   });
-  // });
+  describe('Testing file retrieval and filters', () => {
+    it('should call getMetadata and getFiles, and return filtered files', (done) => {
+      const startDate = new Date('2024-03-11T00:00:00Z');
+      const endDate = new Date('2024-03-12T23:59:59Z');
 
-  it('should call getMetadata and getFiles, and return filtered files', (done) => {
-    const startDate = new Date('2024-03-11T00:00:00Z');
-    const endDate = new Date('2024-03-12T23:59:59Z');
-
-    service.getAllFiles(startDate, endDate).subscribe({
-      next: (files: File[]) => {
-        expect(files.length).toBe(2);
-        expect(bucketMock.getMetadata).toHaveBeenCalled();
-        expect(bucketMock.getFiles).toHaveBeenCalledWith({ prefix: 'notion/subjects/images/' });
-        done();
-      },
-      error: () => {
-        done();
-      },
+      service.getAllFiles(startDate, endDate).subscribe({
+        next: (files: File[]) => {
+          expect(files.length).toBe(2);
+          expect(bucketMock.getMetadata).toHaveBeenCalled();
+          expect(bucketMock.getFiles).toHaveBeenCalledWith({ prefix: 'notion/subjects/images/' });
+          done();
+        },
+        error: () => {
+          done();
+        },
+      });
     });
   });
 
-  it('should upload a file to the bucket', (done) => {
-    const fileUrl = 'https://fastly.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
-    const filePath = 'notion/subjects/images/software-requirements/';
+  describe('Testing file upload', () => {
+    it('should throw an error if the file to upload is not accessible', (done) => {
+      const fileUrl = 'https://fastl.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
+      const filePath = 'notion/subjects/images/software-requirements/';
+      service.uploadFile(fileUrl, filePath).subscribe({
+        next: () => {
+          done();
+        },
+        error: (error: Error) => {
+          console.log('Error message returned', error.message);
+          expect(error).toBeDefined();
+          done();
+        },
+        complete() {
+          done();
+        },
+      });
+    });
 
-    service.uploadFile(fileUrl, filePath).subscribe({
-      next: (response: string) => {
-        expect(response).toEqual(filePath);
-      },
-      error: (error: Error) => {
-        console.log(error.message);
-        done();
-      },
-      complete: () => {
-        done();
-      }
+    it('should upload a file to the bucket', (done) => {
+      const fileUrl = 'https://fastly.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
+      const filePath = 'notion/subjects/images/software-requirements/image-04-02-jpg';
+
+      service.uploadFile(fileUrl, filePath).subscribe({
+        next: (response: string) => {
+          expect(response).toEqual(filePath);
+        },
+        error: (error: Error) => {
+          console.log(error.message);
+          done();
+        },
+        complete: () => {
+          done();
+        },
+      });
     });
   });
 });
