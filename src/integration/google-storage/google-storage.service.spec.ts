@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GoogleStorageService } from './google-storage.service';
 import { Bucket, File, Storage } from '@google-cloud/storage';
 import { ConfigService } from '@nestjs/config';
-import { HttpModule } from '@nestjs/axios';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { Writable } from 'stream';
+import { of } from 'rxjs';
 
 describe('GoogleStorageService', () => {
   // Define all the values that I will be using
@@ -11,7 +12,7 @@ describe('GoogleStorageService', () => {
   let bucketMock: Partial<Bucket>;
   let configServiceMock: Partial<ConfigService>;
   let file: Partial<File>;
-
+  let httpServiceMock: Partial<HttpService>;
   // It will run before each test
   beforeEach(async () => {
     file = {
@@ -38,6 +39,32 @@ describe('GoogleStorageService', () => {
         return stream;
       }),
     };
+
+     httpServiceMock = {
+       get: jest.fn().mockImplementation(() => {
+         // Create a mock Observable that emulates a successful HTTP response with a stream
+         const mockStream = new Writable({
+           write(chunk, encoding, callback) {
+             callback();
+           },
+         });
+
+         mockStream.pipe = jest.fn().mockImplementation((destination) => {
+           setTimeout(() => {
+             destination.emit('finish');
+           }, 100);
+           return destination;
+         });
+
+         return of({
+           data: mockStream,
+           status: 200,
+           statusText: 'OK',
+           headers: {},
+           config: {} as any,
+         });
+       }),
+     };
 
     // Mocking the Google Storage Bucket class, because its define as partial we only have to inform the 2 methods that we will use
     bucketMock = {
@@ -87,6 +114,7 @@ describe('GoogleStorageService', () => {
         GoogleStorageService,
         { provide: ConfigService, useValue: configServiceMock },
         { provide: Storage, useFactory: () => storageMock },
+        { provide: HttpService, useValue: httpServiceMock },
       ],
     }).compile();
 
@@ -135,16 +163,17 @@ describe('GoogleStorageService', () => {
     const fileUrl = 'https://fastly.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
     const filePath = 'notion/subjects/images/software-requirements/';
 
-    const videoUpload = jest.spyOn(service, 'uploadFile');
-
     service.uploadFile(fileUrl, filePath).subscribe({
       next: (response: string) => {
         expect(response).toEqual(filePath);
+      },
+      error: (error: Error) => {
+        console.log(error.message);
         done();
       },
-      error: () => {
+      complete: () => {
         done();
-      },
+      }
     });
   });
 });
