@@ -41,7 +41,7 @@ export class GoogleStorageService {
 
           // If ends sucessfully, it will call the `writeStream.on` on finish
           writeStream.on('finish', () => {
-            observer.next(`Upload completed: ${filePath}`);
+            observer.next(filePath + 'adsa');
             observer.complete();
           });
 

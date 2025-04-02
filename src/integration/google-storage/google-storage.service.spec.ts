@@ -16,7 +16,7 @@ describe('GoogleStorageService', () => {
   beforeEach(async () => {
     file = {
       createWriteStream: jest.fn().mockImplementation((options?: { contentType?: string; resumable?: boolean }) => {
-        const { contentType, resumable = false } = options || {}; // Extraindo os parâmetros com valores padrão
+        const { contentType, resumable = false } = options || {};
 
         const stream = new Writable({
           write(chunk, encoding, callback) {
@@ -55,7 +55,7 @@ describe('GoogleStorageService', () => {
       file: jest
         .fn()
         .mockImplementation((filePath: string) => new File(bucketMock as Bucket, filePath))
-        .mockResolvedValue(file),
+        .mockReturnValue(file),
     };
 
     // Defining the Google Storage class mock, we are saying that for the bucket property
@@ -99,6 +99,21 @@ describe('GoogleStorageService', () => {
     expect(service).toBeDefined();
   });
 
+  // it('should throw an error if the file to upload is not accessible', (done) => {
+  //   const fileUrl = 'https://fastl.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
+  //   const filePath = 'notion/subjects/images/software-requirements/';
+  //   service.uploadFile(fileUrl, filePath).subscribe({
+  //     next: () => {
+  //       console.log('Sucess');
+  //       done();
+  //     },
+  //     error: (error: Error) => {
+  //       console.log('Error message returned', error.message);
+  //       done();
+  //     },
+  //   });
+  // });
+
   it('should call getMetadata and getFiles, and return filtered files', (done) => {
     const startDate = new Date('2024-03-11T00:00:00Z');
     const endDate = new Date('2024-03-12T23:59:59Z');
@@ -119,9 +134,13 @@ describe('GoogleStorageService', () => {
   it('should upload a file to the bucket', (done) => {
     const fileUrl = 'https://fastly.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
     const filePath = 'notion/subjects/images/software-requirements/';
+
+    const videoUpload = jest.spyOn(service, 'uploadFile');
+
     service.uploadFile(fileUrl, filePath).subscribe({
-      next: () => {
-        console.log('Sucess');
+      next: (response: string) => {
+        expect(response).toEqual(filePath);
+        done();
       },
       error: () => {
         done();
