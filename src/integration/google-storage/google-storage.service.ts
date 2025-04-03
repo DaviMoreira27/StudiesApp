@@ -5,12 +5,12 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
 import { from, map, Observable, switchMap } from 'rxjs';
 import Stream from 'stream';
-import { GoogleStorageFilterObject } from './google-storage.types';
+import { GoogleStorageFilterObject, MediaTypes } from './google-storage.types';
 
 @Injectable()
 export class GoogleStorageService {
   private readonly bucket: Bucket;
-  private readonly initialImageFilePath = 'notion/subjects/images';
+  private readonly initialImageFilePath = 'notion/subjects/';
 
   constructor(
     private readonly configService: ConfigService,
@@ -59,18 +59,30 @@ export class GoogleStorageService {
     });
   }
 
-  getAllFiles(startDate?: Date, endDate?: Date, subject?: string): Observable<File[]> {
+  getAllFiles(startDate?: Date, endDate?: Date, subject?: string, mediaType?: MediaTypes): Observable<File[]> {
     const filterObject: Observable<GoogleStorageFilterObject> = from(this.bucket.getMetadata()).pipe(
       map(([metadata]) => ({
         startDate: startDate?.getTime() ?? Date.parse(metadata?.timeCreated ?? ''),
         endDate: endDate?.getTime() ?? new Date().getTime(),
         subject: subject ?? '',
+        mediaType: mediaType ?? ''
       })),
     );
 
     return filterObject.pipe(
-      switchMap((filterObject) =>
-        from(this.bucket.getFiles({ prefix: `${this.initialImageFilePath}/${filterObject.subject}` })).pipe(
+      switchMap((filterObject) => {
+        let prefix = `${this.initialImageFilePath}/${filterObject.subject}/${filterObject.mediaType}`;
+
+        // FIXME: #3 Implement a better way of filtering, possibly using Big Query or other search engine
+        while (prefix.includes('//')) {
+          prefix = prefix.replace('//', '/');
+        }
+
+        if (prefix.endsWith('/')) {
+          prefix = prefix.slice(0, -1);
+        }
+
+        return from(this.bucket.getFiles({ prefix })).pipe(
           map(([files]) => {
             if (!startDate && !endDate) {
               return files;
@@ -82,7 +94,7 @@ export class GoogleStorageService {
                 new Date(file.metadata.timeCreated ?? '').getTime() <= filterObject.endDate,
             );
           }),
-        ),
+        )},
       ),
     );
   }
