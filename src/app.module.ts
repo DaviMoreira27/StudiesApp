@@ -6,6 +6,8 @@ import { MessagingService } from './facade/messaging/messaging.service';
 import { StorageService } from './facade/storage/storage.service';
 import { NotesService } from './facade/notes/notes.service';
 import config from './config/config';
+import { HttpModule } from '@nestjs/axios';
+import { GoogleStorageModule } from './integration/google-storage/google-storage.module';
 
 @Module({
   imports: [
@@ -13,6 +15,11 @@ import config from './config/config';
       isGlobal: true,
       load: [config],
     }),
+    HttpModule.register({
+      timeout: 20000,
+      maxRedirects: 5,
+    }),
+    GoogleStorageModule,
   ],
   controllers: [],
   providers: [
