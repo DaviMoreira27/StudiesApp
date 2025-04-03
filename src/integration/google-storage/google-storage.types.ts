@@ -5,7 +5,7 @@ export interface GoogleStorageFilterObject {
   mediaType: MediaTypes | string;
 }
 
-// TODO: It should be implemented in the domain
+// TODO: #4 It should be implemented in the domain
 export enum MediaTypes {
   IMAGES = 'images',
   VIDEOS = 'videos',
