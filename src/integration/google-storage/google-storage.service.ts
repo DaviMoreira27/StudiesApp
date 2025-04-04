@@ -98,4 +98,21 @@ export class GoogleStorageService {
       ),
     );
   }
+
+  deleteFiles (startDate?: Date, endDate?: Date, subject?: string, fileName?: string): Observable<void> {
+    const filterObject: Observable<GoogleStorageFilterObject> = from(this.bucket.getMetadata()).pipe(
+      map(([metadata]) => ({
+        startDate: startDate?.getTime() ?? Date.parse(metadata?.timeCreated ?? ''),
+        endDate: endDate?.getTime() ?? new Date().getTime(),
+        subject: subject ?? '',
+        fileName: fileName ?? '',
+      })),
+    );
+
+    filterObject.pipe(
+      switchMap((filterObject) =>
+        from(this.bucket.deleteFiles({ prefix: `${this.initialImageFilePath}/${filterObject.subject}` }))
+      ),
+    );
+  }
 }
