@@ -17,10 +17,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // TODO: #8 Integrate with Grafana (Loki) for logs
     const logObject = {
-      date: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
       path: request.url,
       trace: exception.httpTrace,
       status: exception.httpCode,
+      message: exception.message,
     };
 
     console.error(logObject);

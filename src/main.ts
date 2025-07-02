@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { ValidationAppError } from './global/errors/global.errors';
+import { HttpExceptionFilter } from './global/filters/global.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -10,15 +11,19 @@ async function bootstrap() {
       json: true,
     }),
   });
+  app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(
     new ValidationPipe({
       // TODO: Handle better validation errors
-      exceptionFactory: (errors) =>
-        new ValidationAppError(
-          errors.map((err) => Object.values(err.constraints || {})).flat(),
-        ),
+      exceptionFactory: (errors) => {
+        const arrayErrors = (errors.map((err) => Object.values(err.constraints || {})).flat()).join('-');
+        console.log('ARRAY ERRORS', arrayErrors);
+        console.log('ARRAY VALUES', errors);
+        throw new ValidationAppError(arrayErrors);
+      }
     }),
   );
+  app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();

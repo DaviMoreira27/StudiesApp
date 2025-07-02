@@ -3,7 +3,7 @@ import { GoogleBuckets, NodeEnvironments } from './config.types';
 export default () => ({
   environment: getEnv(process.env.NODE_ENV),
   port: parseInt(process.env.PORT || '3000', 10),
-  whatsappVerifyToken: process.env.MY_TOKEN ?? 'APPLE',
+  whatsappVerifyToken: process.env.WHATSAPP_VERIFY_TOKEN ?? 'APPLE',
   whatsappAccessToken: process.env.WHATSSAP_ACCESS_TOKEN ?? 'BANANA',
   googleBucket: getBucket(getEnv(process.env.NODE_ENV)),
   googleAccountCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS ?? '',

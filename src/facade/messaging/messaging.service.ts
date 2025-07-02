@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InvalidWebhookToken } from '../../errors/message.errors';
-import {
-  HubChallengeDTO,
-  HubModeDTO,
-  HubVerifyTokenDTO,
-} from '../../types/message.types';
+import { WhatsAppWebhookPayloadDTO } from 'src/types/message.types';
 
 @Injectable()
 export class MessagingService {
@@ -15,24 +11,14 @@ export class MessagingService {
     this.verifyToken = this.configService.get<string>('whatsappVerifyToken', '');
   }
 
-  validateWebhook(
-    mode: HubModeDTO,
-    challenge: HubChallengeDTO,
-    token: HubVerifyTokenDTO,
-  ): HubChallengeDTO {
-    if (
-      mode['hub.mode'] === 'subscribe' &&
-      token['hub.verify_token'] === this.verifyToken
-    ) {
+  validateWebhook(mode: string, challenge: string, token: string): string {
+    if (mode === 'subscribe' && token === this.verifyToken) {
       return challenge;
     }
     throw new InvalidWebhookToken('VALIDATE_WEBHOOK');
   }
 
-  processWhatsAppMessage(payload: any) {
-    console.log(
-      'Processing WhatsApp message:',
-      JSON.parse(JSON.stringify(payload)),
-    );
+  processWhatsAppMessage(payload: WhatsAppWebhookPayloadDTO) {
+    console.dir(payload, { depth: null, colors: true });
   }
 }

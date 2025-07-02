@@ -1,7 +1,5 @@
-import { IsString, ValidateNested, IsArray } from 'class-validator';
+import { IsString, ValidateNested, IsArray, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
-
-// WHATSSAP BODY DTO
 
 class MetadataDTO {
   @IsString()
@@ -30,6 +28,21 @@ class TextDTO {
   body: string;
 }
 
+class ImageDTO {
+  @IsString()
+  mime_type: string;
+
+  @IsString()
+  sha256: string;
+
+  @IsString()
+  id: string;
+
+  @IsString()
+  @IsOptional()
+  caption?: string;
+}
+
 class MessageDTO {
   @IsString()
   from: string;
@@ -42,16 +55,21 @@ class MessageDTO {
 
   @IsString()
   // FIXME: Maybe change it to an ENUM
-  type: 'text';
+  type: 'text' | 'image';
 
   @ValidateNested()
+  @IsOptional()
   @Type(() => TextDTO)
-  text: TextDTO;
+  text?: TextDTO;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => ImageDTO)
+  image?: ImageDTO;
 }
 
 class ValueDTO {
   @IsString()
-  // FIXME: Maybe change it to an ENUM
   messaging_product: 'whatsapp';
 
   @ValidateNested()
@@ -69,7 +87,7 @@ class ValueDTO {
   messages: MessageDTO[];
 }
 
-export class WhatsAppWebhookPayloadDTO {
+class ChangeDTO {
   @IsString()
   field: string;
 
@@ -78,19 +96,35 @@ export class WhatsAppWebhookPayloadDTO {
   value: ValueDTO;
 }
 
+class EntryDTO {
+  @IsString()
+  id: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ChangeDTO)
+  changes: ChangeDTO[];
+}
+
+export class WhatsAppWebhookPayloadDTO {
+  @IsString()
+  object: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => EntryDTO)
+  entry: EntryDTO[];
+}
+
 // WEBHOOK QUERY PARAMS DTO
 
-export class HubVerifyTokenDTO {
-  @IsString()
-  'hub.verify_token': string;
-}
-
-export class HubChallengeDTO {
-  @IsString()
-  'hub.challenge': string;
-}
-
-export class HubModeDTO {
+export class HubWebhookQueryDTO {
   @IsString()
   'hub.mode': string;
+
+  @IsString()
+  'hub.challenge': string;
+
+  @IsString()
+  'hub.verify_token': string;
 }

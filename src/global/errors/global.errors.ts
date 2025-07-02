@@ -13,9 +13,8 @@ abstract class GlobalError extends MainAppError {
 }
 
 export class ValidationAppError extends GlobalError {
-  constructor(message: string[]) {
-    const joinedString = message.join('-');
-    super(joinedString, HttpStatusCode.BadRequest, 'VALIDATION_ERROR');
+  constructor(message: string) {
+    super(message, HttpStatusCode.BadRequest, 'VALIDATION_ERROR');
   }
 }
 

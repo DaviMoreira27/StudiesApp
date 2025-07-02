@@ -8,6 +8,7 @@ import config from './config/config';
 import { HttpModule } from '@nestjs/axios';
 import { GoogleStorageModule } from './integration/google-storage/google-storage.module';
 import { GoogleStorageService } from './integration/google-storage/google-storage.service';
+import { MessageController } from './controllers/message/message.controller';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { GoogleStorageService } from './integration/google-storage/google-storag
     }),
     GoogleStorageModule,
   ],
-  controllers: [],
+  controllers: [MessageController],
   providers: [
     NotionService,
     MessagingService,
