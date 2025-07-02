@@ -44,17 +44,17 @@ $ yarn run test:cov
 ## Todos
 
 - [ ] Implement Notion datasource (images and subject info visualization)
-- [ ] Implement Whatssap integration (chat integration to use this application)
-- [ ] Implement Telegram integration (chat integration to use this application)
 
 ## In Progress
 
 - [ ] Google storage integration (all the files will be stored in a GCP Storage Bucket)
+- [ ] Implement Whatssap integration (chat integration to use this application)
 
 ## Someday
 
 - [ ] Trello integration (store all the activities and exams dates)
 - [ ] Implement Discord integration (chat integration to use this application)
+- [ ] Implement Telegram integration (chat integration to use this application)
 
 ## Done
 
