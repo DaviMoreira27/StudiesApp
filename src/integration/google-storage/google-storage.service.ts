@@ -1,0 +1,115 @@
+import { Bucket, File, Storage } from '@google-cloud/storage';
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AxiosResponse } from 'axios';
+import { from, map, Observable, switchMap } from 'rxjs';
+import Stream from 'stream';
+import { GoogleStorageFilterObject, MediaTypes } from './google-storage.types';
+
+@Injectable()
+export class GoogleStorageService {
+  private readonly bucket: Bucket;
+  private readonly initialImageFilePath = 'notion/subjects/';
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
+    private readonly googleStorage: Storage,
+  ) {
+    this.bucket = this.googleStorage.bucket(
+      this.configService.get<string>('googleBucket')!,
+    );
+  }
+
+  uploadFile(fileUrl: string, filePath: string): Observable<string> {
+    // This method will return an observable
+    // It receives as first parameters a subscriber that the observable will listen on
+    return new Observable<string>((observer) => {
+      this.httpService
+        .get<Stream>(fileUrl, { responseType: 'stream' })
+        .subscribe({
+          // When the server is ready to return the first chunk, it will receive a stream as the response
+          next: (response: AxiosResponse<Stream>) => {
+            // The next will not be initiated for each chunk, but only for the stream
+            // While its here, it will continue to receive chunks data, but will not start a new next call
+            const storageFile = this.bucket.file(filePath);
+            // Creating a write stream to upload the file to the GCP Storage
+            const writeStream = storageFile.createWriteStream({
+              contentType: 'image/jpeg',
+              resumable: false,
+            });
+
+            // For each chunk received, it will pipe then directly to the GCP Storage
+            response.data.pipe(writeStream);
+
+            // If ends sucessfully, it will call the `writeStream.on` on finish
+            writeStream.on('finish', () => {
+              observer.next(filePath);
+              observer.complete();
+            });
+
+            // If not it will call it on error
+            writeStream.on('error', (err) => {
+              // This will be called to handle the error from the file upload
+              observer.error(err);
+            });
+          },
+          error: (err) => {
+            // This will be called to handle the error from the file download
+            observer.error(err);
+          },
+        });
+    });
+  }
+
+  getAllFiles(
+    startDate?: Date,
+    endDate?: Date,
+    subject?: string,
+    mediaType?: MediaTypes,
+  ): Observable<File[]> {
+    const filterObject: Observable<GoogleStorageFilterObject> = from(
+      this.bucket.getMetadata(),
+    ).pipe(
+      map(([metadata]) => ({
+        startDate:
+          startDate?.getTime() ?? Date.parse(metadata?.timeCreated ?? ''),
+        endDate: endDate?.getTime() ?? new Date().getTime(),
+        subject: subject ?? '',
+        mediaType: mediaType ?? '',
+      })),
+    );
+
+    return filterObject.pipe(
+      switchMap((filterObject) => {
+        let prefix = `${this.initialImageFilePath}/${filterObject.subject}/${filterObject.mediaType}`;
+
+        // FIXME: #3 Implement a better way of filtering, possibly using Big Query or other search engine
+        while (prefix.includes('//')) {
+          prefix = prefix.replace('//', '/');
+        }
+
+        if (prefix.endsWith('/')) {
+          prefix = prefix.slice(0, -1);
+        }
+
+        return from(this.bucket.getFiles({ prefix })).pipe(
+          map(([files]) => {
+            if (!startDate && !endDate) {
+              return files;
+            }
+
+            return files.filter(
+              (file) =>
+                new Date(file.metadata.timeCreated ?? '').getTime() >=
+                  filterObject.startDate &&
+                new Date(file.metadata.timeCreated ?? '').getTime() <=
+                  filterObject.endDate,
+            );
+          }),
+        );
+      }),
+    );
+  }
+}
