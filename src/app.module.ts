@@ -20,16 +20,10 @@ import { GoogleStorageService } from './integration/google-storage/google-storag
       maxRedirects: 5,
     }),
     GoogleStorageModule,
-    HttpModule.register({
-      timeout: 20000,
-      maxRedirects: 5,
-    }),
-    GoogleStorageModule,
   ],
   controllers: [],
   providers: [
     NotionService,
-    GoogleStorageService,
     MessagingService,
     StorageService,
     NotesService,

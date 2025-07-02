@@ -19,12 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:integration": "jest --config ./test/jest-integration.json"
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:integration": "jest --config ./test/jest-integration.json"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.15.2",
-    "@nestjs/axios": "^4.0.0",
     "@google-cloud/storage": "^7.15.2",
     "@nestjs/axios": "^4.0.0",
     "@nestjs/common": "^11.0.1",
@@ -71,9 +67,6 @@
       "json",
       "ts"
     ],
-    "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/src/$1"
-    },
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/src/$1"
     },
