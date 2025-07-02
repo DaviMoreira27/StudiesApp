@@ -8,6 +8,8 @@ import { NotesService } from './facade/notes/notes.service';
 import config from './config/config';
 import { HttpModule } from '@nestjs/axios';
 import { GoogleStorageModule } from './integration/google-storage/google-storage.module';
+import { HttpModule } from '@nestjs/axios';
+import { GoogleStorageModule } from './integration/google-storage/google-storage.module';
 
 @Module({
   imports: [
@@ -15,6 +17,11 @@ import { GoogleStorageModule } from './integration/google-storage/google-storage
       isGlobal: true,
       load: [config],
     }),
+    HttpModule.register({
+      timeout: 20000,
+      maxRedirects: 5,
+    }),
+    GoogleStorageModule,
     HttpModule.register({
       timeout: 20000,
       maxRedirects: 5,

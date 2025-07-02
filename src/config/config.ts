@@ -1,4 +1,5 @@
 import { GoogleBuckets, NodeEnvironments } from './config.types';
+import { GoogleBuckets, NodeEnvironments } from './config.types';
 
 export default () => ({
   environment: getEnv(process.env.NODE_ENV),
