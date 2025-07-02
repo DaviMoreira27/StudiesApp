@@ -12,10 +12,7 @@ export class MessagingService {
   private readonly verifyToken: string;
 
   constructor(private configService: ConfigService) {
-    this.verifyToken = this.configService.get<string>(
-      'WHATSAPP_VERIFY_TOKEN',
-      '',
-    );
+    this.verifyToken = this.configService.get<string>('whatsappVerifyToken', '');
   }
 
   validateWebhook(
