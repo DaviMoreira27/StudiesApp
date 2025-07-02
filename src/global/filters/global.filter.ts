@@ -15,7 +15,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    // TODO: Integrate with Grafana (Loki) for logs
+    // TODO: #8 Integrate with Grafana (Loki) for logs
     const logObject = {
       date: new Date().toISOString(),
       path: request.url,
