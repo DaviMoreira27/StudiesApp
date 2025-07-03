@@ -1,0 +1,345 @@
+[
+    // TEXT
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIDY3QzBENjY1QzVDN0EzNDYxNTE2NkEzMzFGRERCN0I4AA==",
+                                    "timestamp": "1751511408",
+                                    "type": "text",
+                                    "text": {
+                                        "body": "Teste message"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    // IMAGE
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIDFDRkZBMTIyRTg3RjVGOTc2MjM4MDQwMkY2RTJFMzQxAA==",
+                                    "timestamp": "1751432646",
+                                    "type": "image",
+                                    "image": {
+                                        "mime_type": "image/jpeg",
+                                        "sha256": "3xUvkipXrrqaSnVvGkUME1x5KML4gtKPE+VN7BlHRuY=",
+                                        "id": "1031042192124290"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    // FOR MULTIPLE IMAGES, IT SENDS AN IMAGE OBJECT FOR EACH ONE, PLUS THIS ONE
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIDg2QkRBQUY2RTYxOTNFQUM1NTM5Rjg3QThGMDVFNkFFAA==",
+                                    "timestamp": "1751511911",
+                                    "type": "unsupported",
+                                    "errors": [
+                                        {
+                                            "code": 131051,
+                                            "title": "Message type unknown",
+                                            "message": "Message type unknown",
+                                            "error_data": {
+                                                "details": "Message type is currently not supported."
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    // AUDIO
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIDAzOUVEQjIzRDhCQkY1OUJDNkJENEVDNzgxNDEyNTI1AA==",
+                                    "timestamp": "1751511725",
+                                    "type": "audio",
+                                    "audio": {
+                                        "mime_type": "audio/ogg; codecs=opus",
+                                        "sha256": "NyBwTkU9mu/PVmEivZLukw1woMUdClTb83o9r+50Pmg=",
+                                        "id": "711965908664538",
+                                        "voice": true
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    // VIDEO WITHOUT CAPTION AND GIFs
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIDk1NEE0ODQ0OUQ5RkFGMDM0NjUxMTdDQzI2QjIyRDBEAA==",
+                                    "timestamp": "1751512363",
+                                    "type": "video",
+                                    "video": {
+                                        "mime_type": "video/mp4",
+                                        "sha256": "yQ+Z9upzU6t8PiKT0hKA1JE+sg2R/RqCvAjDUTP/PSI=",
+                                        "id": "1235519601451543"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    // VIDEO WITH CAPTION
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIEM3OTlENkRCRDQyQUFCMkZGNjM1MTdFODQwRjNCRDI2AA==",
+                                    "timestamp": "1751512563",
+                                    "type": "video",
+                                    "video": {
+                                        "mime_type": "video/mp4",
+                                        "sha256": "40RhIC8hr9SX5M2w8Ks9whJc8LtuPlfKsP8/QhatO0M=",
+                                        "id": "1833329913881062",
+                                        "caption": "Teste caption"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    // STICKER
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIDkxRTBCMjEzQTMyMTlERDEzMUExMEMzRTE5RkRCQThFAA==",
+                                    "timestamp": "1751512638",
+                                    "type": "sticker",
+                                    "sticker": {
+                                        "mime_type": "image/webp",
+                                        "sha256": "LFLhkh8JXbTSRIksNcxE5JDFySyU6FhHYyWlvidvunE=",
+                                        "id": "1248535973070357",
+                                        "animated": false
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    // DOCUMENTS
+    {
+        "object": "whatsapp_business_account",
+        "entry": [
+            {
+                "id": "1365321261276549",
+                "changes": [
+                    {
+                        "field": "messages",
+                        "value": {
+                            "messaging_product": "whatsapp",
+                            "metadata": {
+                                "display_phone_number": "15556455559",
+                                "phone_number_id": "625483270644017"
+                            },
+                            "contacts": [
+                                {
+                                    "profile": {
+                                        "name": "Davi"
+                                    },
+                                    "wa_id": "5511916060215"
+                                }
+                            ],
+                            "messages": [
+                                {
+                                    "from": "5511916060215",
+                                    "id": "wamid.HBgNNTUxMTkxNjA2MDIxNRUCABIYIDUzRUI1RkM1RDA3RjE5MkI1QTA0RjBEQ0E1QjAzNzE5AA==",
+                                    "timestamp": "1751512866",
+                                    "type": "document",
+                                    "document": {
+                                        "filename": "08220589876-IRPF-2023-2022-retif-imagem-declaracao.pdf",
+                                        "mime_type": "application/pdf",
+                                        "sha256": "UkO2bs+mpRWGsKmNBUkEteHGJaLePtB5RKhNq+e0iIo=",
+                                        "id": "1073493648048683"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

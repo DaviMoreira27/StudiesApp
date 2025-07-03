@@ -1,4 +1,4 @@
-import { IsString, ValidateNested, IsArray, IsOptional } from 'class-validator';
+import { IsString, ValidateNested, IsArray, IsOptional, IsNumber, IsBoolean, isBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class MetadataDTO {
@@ -28,6 +28,11 @@ class TextDTO {
   body: string;
 }
 
+class ErrorDataDTO {
+  @IsString()
+  details: string;
+}
+
 class ImageDTO {
   @IsString()
   mime_type: string;
@@ -43,6 +48,81 @@ class ImageDTO {
   caption?: string;
 }
 
+class AudioDTO {
+  @IsString()
+  mime_type: string;
+
+  @IsString()
+  sha256: string;
+
+  @IsString()
+  id: string;
+
+  @IsOptional()
+  @IsBoolean()
+  voice?: boolean;
+}
+
+class VideoDTO {
+  @IsString()
+  mime_type: string;
+
+  @IsString()
+  sha256: string;
+
+  @IsString()
+  id: string;
+
+  @IsString()
+  @IsOptional()
+  caption?: string;
+}
+
+class DocumentDTO {
+  @IsString()
+  mime_type: string;
+
+  @IsString()
+  sha256: string;
+
+  @IsString()
+  id: string;
+
+  @IsString()
+  filename: string;
+}
+
+class StickerDTO {
+  @IsString()
+  mime_type: string;
+
+  @IsString()
+  sha256: string;
+
+  @IsString()
+  id: string;
+
+  @IsBoolean()
+  @IsOptional()
+  animated?: boolean;
+}
+
+class ErrorDTO {
+  @IsNumber()
+  code: number;
+
+  @IsString()
+  title: string;
+
+  @IsString()
+  message: string;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => ErrorDataDTO)
+  error_data?: ErrorDataDTO;
+}
+
 class MessageDTO {
   @IsString()
   from: string;
@@ -55,7 +135,7 @@ class MessageDTO {
 
   @IsString()
   // FIXME: Maybe change it to an ENUM
-  type: 'text' | 'image';
+  type: 'text' | 'image' | 'audio' | 'video' | 'sticker' | 'document' | 'unsupported';
 
   @ValidateNested()
   @IsOptional()
@@ -66,6 +146,31 @@ class MessageDTO {
   @IsOptional()
   @Type(() => ImageDTO)
   image?: ImageDTO;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => AudioDTO)
+  audio?: AudioDTO;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => VideoDTO)
+  video?: VideoDTO;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => StickerDTO)
+  sticker?: StickerDTO;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => DocumentDTO)
+  document?: DocumentDTO;
+
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => Array<ErrorDTO>)
+  errors?: ErrorDTO[];
 }
 
 class ValueDTO {
