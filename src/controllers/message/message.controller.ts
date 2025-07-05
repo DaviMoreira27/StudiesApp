@@ -19,7 +19,9 @@ export class MessageController {
   }
 
   @Post('webhook')
-  getWhatsAppMessage(@Body() body: WhatsAppWebhookPayloadDTO) {
+  async messageHandler(@Body() body: WhatsAppWebhookPayloadDTO) {
     this.messageService.processWhatsAppMessage(body);
+
+    await this.messageService.processWhatsAppMessage(body);
   }
 }

@@ -12,6 +12,7 @@ import config from './config/config';
 import { Contact } from './database/entities/contact.entity';
 import { Conversation } from './database/entities/conversation.entity';
 import { Message } from './database/entities/message.entity';
+import { MessagingModule } from './facade/messaging/messaging.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { Message } from './database/entities/message.entity';
         logging: configService.get<boolean>('databaseLogging')
       }),
     }),
+    MessagingModule,
   ],
   controllers: [MessageController],
   providers: [NotionService, MessagingService, StorageService, NotesService],

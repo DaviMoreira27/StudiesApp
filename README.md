@@ -59,3 +59,8 @@ $ yarn run test:cov
 ## Done
 
 - [x] Project scaffold
+
+
+## Database Diagram
+
+https://dbdiagram.io/d/6868ba49f413ba3508640079

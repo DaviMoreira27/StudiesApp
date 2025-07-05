@@ -1,5 +1,7 @@
 import { IsString, ValidateNested, IsArray, IsOptional, IsNumber, IsBoolean, isBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
+import { MessageType } from 'src/database/entities/message.entity';
+import { ConversationType } from 'src/database/entities/conversation.entity';
 
 class MetadataDTO {
   @IsString()
@@ -123,7 +125,7 @@ class ErrorDTO {
   error_data?: ErrorDataDTO;
 }
 
-class MessageDTO {
+export class MessageDTO {
   @IsString()
   from: string;
 
@@ -232,4 +234,16 @@ export class HubWebhookQueryDTO {
 
   @IsString()
   'hub.verify_token': string;
+}
+
+// WhatsAppMapped
+
+export interface WhatsAppMessageMapped {
+  metaMessageId: string;
+  name: string;
+  phoneNumber: string;
+  text?: string;
+  mediaId?: string;
+  type: MessageType;
+  sendedAt: Date;
 }

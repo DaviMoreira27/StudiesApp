@@ -29,3 +29,10 @@ export class InvalidWebhookToken extends MessageError {
     );
   }
 }
+
+export class UnsupportedMessageReceived extends MessageError {
+  constructor(httpTrace?: string) {
+    const completeTrace = httpTrace ? `UNSUPPORTED_MESSAGE_RECEIVED-${httpTrace}` : 'INVALID_WEBHOOK_TOKEN';
+    super('The message received is not mapped or is malformed', HttpStatusCode.UnprocessableEntity, completeTrace);
+  }
+}

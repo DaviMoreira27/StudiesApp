@@ -1,13 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InvalidWebhookToken } from '../../errors/message.errors';
-import { WhatsAppWebhookPayloadDTO } from 'src/types/message.types';
+import { InvalidWebhookToken, UnsupportedMessageReceived } from '../../errors/message.errors';
+import { MessageDTO, WhatsAppMessageMapped, WhatsAppWebhookPayloadDTO } from 'src/types/message.types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Message, MessageType } from 'src/database/entities/message.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MessagingService {
   private readonly verifyToken: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    @Inject(ConfigService)
+    private configService: ConfigService,
+
+    @InjectRepository(Message)
+    private messageRepository: Repository<Message>,
+  ) {
     this.verifyToken = this.configService.get<string>('whatsappVerifyToken', '');
   }
 
@@ -18,7 +27,81 @@ export class MessagingService {
     throw new InvalidWebhookToken('VALIDATE_WEBHOOK');
   }
 
-  processWhatsAppMessage(payload: WhatsAppWebhookPayloadDTO) {
-    console.dir(payload, { depth: null, colors: true });
+  async processWhatsAppMessage(payload: WhatsAppWebhookPayloadDTO) {
+    const message = this.mapMessage(payload);
+    /*
+      TODO: get conversation
+      TODO: save all data in the db
+    */
+  }
+
+  private async mapMessage(payload: WhatsAppWebhookPayloadDTO) {
+    const entry = payload.entry?.[0];
+    if (!entry) {
+      console.warn('Payload does not contain any entry.');
+      throw new UnsupportedMessageReceived('MAP_MESSAGE_ENTRY');
+    }
+
+    const change = entry.changes?.[0];
+    if (!change) {
+      console.warn('Entry does not contain any changes.');
+      throw new UnsupportedMessageReceived('MAP_MESSAGE_CHANGE');
+    }
+
+    const value = change.value;
+    if (!value) {
+      console.warn('Change does not contain a value.');
+      throw new UnsupportedMessageReceived('MAP_MESSAGE_VALUE');
+    }
+
+    const contact = value.contacts?.[0];
+    const message = value.messages?.[0];
+
+    if (!message) {
+      console.warn('Value does not contain a message.');
+      throw new UnsupportedMessageReceived('MAP_MESSAGE_VALUE');
+    }
+
+    const mappedMessage: WhatsAppMessageMapped = {
+      metaMessageId: message.id,
+      name: contact.profile.name,
+      phoneNumber: message.from,
+      type: message.type as MessageType,
+      sendedAt: new Date(parseInt(message.timestamp, 10) * 1000), // The whatsApp timestamp is in Unix format
+    };
+
+    this.setMessageBody(mappedMessage, message);
+
+    return mappedMessage;
+  }
+
+  private setMessageBody(mappedMessage: WhatsAppMessageMapped, receivedMessage: MessageDTO) {
+    switch (receivedMessage.type) {
+      case 'text':
+        mappedMessage.text = receivedMessage.text?.body;
+        break;
+      case 'image':
+        mappedMessage.mediaId = receivedMessage.image?.id;
+        mappedMessage.text = receivedMessage.image?.caption;
+        break;
+      case 'audio':
+        mappedMessage.mediaId = receivedMessage.audio?.id;
+        break;
+      case 'video':
+        mappedMessage.mediaId = receivedMessage.video?.id;
+        mappedMessage.text = receivedMessage.video?.caption;
+        break;
+      case 'sticker':
+        mappedMessage.mediaId = receivedMessage.sticker?.id;
+        break;
+      case 'document':
+        mappedMessage.mediaId = receivedMessage.document?.id;
+        mappedMessage.text = receivedMessage.document?.filename;
+        break;
+      case 'unsupported':
+        throw new UnsupportedMessageReceived('MESSAGE_BODY_UNSUPPORTED');
+      default:
+        throw new UnsupportedMessageReceived('MESSAGE_BODY_DEFAULT')
+    }
   }
 }
