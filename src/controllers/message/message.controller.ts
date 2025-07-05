@@ -1,9 +1,10 @@
-import { Controller, Get, Query, Body, Post } from '@nestjs/common';
+import { Controller, Get, Query, Body, Post, Res } from '@nestjs/common';
 import { MessagingService } from '../../facade/messaging/messaging.service';
 import {
   WhatsAppWebhookPayloadDTO,
   HubWebhookQueryDTO,
 } from '../../types/message.types';
+import { Response } from 'express';
 
 @Controller('message')
 export class MessageController {
@@ -23,5 +24,6 @@ export class MessageController {
     this.messageService.processWhatsAppMessage(body);
 
     await this.messageService.processWhatsAppMessage(body);
+
   }
 }

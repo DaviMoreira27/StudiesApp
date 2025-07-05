@@ -11,6 +11,7 @@ export class TablesPluralization1751726966335 implements MigrationInterface {
         queryRunner.commitTransaction();
     } catch (error: unknown) {
         queryRunner.rollbackTransaction();
+        throw error;
     }
 
   }
@@ -24,6 +25,7 @@ export class TablesPluralization1751726966335 implements MigrationInterface {
         queryRunner.commitTransaction();
     } catch(error: unknown) {
         queryRunner.rollbackTransaction();
+        throw error;
     }
   }
 }

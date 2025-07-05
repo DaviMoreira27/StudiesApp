@@ -13,12 +13,16 @@ import { Contacts } from './contact.entity';
 import { Messages } from './message.entity';
 
 export enum ConversationType {
-  DIRECT = 'direct',
-  GROUP = 'group',
-  BROADCAST = 'broadcast',
+  SUBJECT = 'subject',
+  CONFIG = 'config',
+}
+
+export enum ConversationStatus {
+  STARTED = 'started',
+  ONGOING = 'ongoing',
+  FINALIZED = 'finalized',
 }
   
-
 @Entity()
 export class Conversations {
   @PrimaryColumn({ type: 'varchar', length: 26 }) // ULIDs
@@ -30,6 +34,9 @@ export class Conversations {
   @ManyToOne(() => Contacts, (contacts) => contacts.conversations)
   @JoinColumn({ name: 'contact_id', referencedColumnName: 'id' })
   contact: Contacts;
+
+  @Column({ type: 'enum', enum: ConversationStatus, nullable: false })
+  status: ConversationStatus;
 
   @Column({ type: 'varchar', length: 60, nullable: true })
   subject: string;

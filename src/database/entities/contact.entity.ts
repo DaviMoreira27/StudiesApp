@@ -9,12 +9,6 @@ import {
 import { ulid } from 'ulid';
 import { Conversations } from './conversation.entity';
 
-export enum ConversationStatus {
-  STARTED = 'started',
-  ONGOING = 'ongoing',
-  FINALIZED = 'finalized',
-}
-
 @Entity()
 export class Contacts {
   @PrimaryColumn({ type: 'varchar', length: 26 })
@@ -25,9 +19,6 @@ export class Contacts {
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
-
-  @Column({ type: 'enum', enum: ConversationStatus, nullable: false })
-  status: ConversationStatus;
 
   @CreateDateColumn({ type: 'timestamp', nullable: false })
   created_at: Date;

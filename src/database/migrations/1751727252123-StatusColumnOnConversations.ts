@@ -21,6 +21,7 @@ export class StatusColumnOnConversations1751727252123 implements MigrationInterf
         await queryRunner.query(`DROP TYPE "conversations_status_enum"`);
     } catch (error: unknown) {
         queryRunner.rollbackTransaction();
+        throw error;
     }
     
   }
