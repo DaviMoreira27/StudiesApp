@@ -7,7 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ulid } from 'ulid';
-import { Conversation } from './conversation.entity';
+import { Conversations } from './conversation.entity';
 
 export enum ConversationStatus {
   STARTED = 'started',
@@ -16,7 +16,7 @@ export enum ConversationStatus {
 }
 
 @Entity()
-export class Contact {
+export class Contacts {
   @PrimaryColumn({ type: 'varchar', length: 26 })
   id: string;
 
@@ -35,8 +35,8 @@ export class Contact {
   @UpdateDateColumn({ type: 'timestamp', nullable: true })
   update_at: Date;
 
-  @OneToMany(() => Conversation, (conversation) => conversation.contact)
-  conversations: Conversation[];
+  @OneToMany(() => Conversations, (conversations) => conversations.contact)
+  conversations: Conversations[];
 
   constructor() {
     this.id = ulid();

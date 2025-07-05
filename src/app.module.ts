@@ -9,9 +9,9 @@ import { GoogleStorageModule } from './integration/google-storage/google-storage
 import { MessageController } from './controllers/message/message.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from './config/config';
-import { Contact } from './database/entities/contact.entity';
-import { Conversation } from './database/entities/conversation.entity';
-import { Message } from './database/entities/message.entity';
+import { Contacts } from './database/entities/contact.entity';
+import { Conversations } from './database/entities/conversation.entity';
+import { Messages } from './database/entities/message.entity';
 import { MessagingModule } from './facade/messaging/messaging.module';
 
 @Module({
@@ -35,7 +35,7 @@ import { MessagingModule } from './facade/messaging/messaging.module';
         username: configService.get<string>('databaseUser')!,
         password: configService.get<string>('databasePassword')!,
         database: configService.get<string>('databaseName')!,
-        entities: [Contact, Conversation, Message],
+        entities: [Contacts, Conversations, Messages],
         synchronize: configService.get<boolean>('databaseSync')!,
         logging: configService.get<boolean>('databaseLogging')
       }),

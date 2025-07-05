@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { ulid } from 'ulid';
-import { Conversation } from './conversation.entity';
+import { Conversations } from './conversation.entity';
 
 export enum MessageType {
   TEXT = 'text',
@@ -21,13 +21,13 @@ export enum MessageType {
 }
 
 @Entity()
-export class Message {
+export class Messages {
   @PrimaryColumn({ type: 'varchar', length: 26 })
   id: string;
 
-  @ManyToOne(() => Conversation, (conversation) => conversation.messages)
+  @ManyToOne(() => Conversations, (conversations) => conversations.messages)
   @JoinColumn({ name: 'conversation_id', referencedColumnName: 'id' })
-  conversation: Conversation;
+  conversation: Conversations;
 
   @Column({ type: 'enum', enum: MessageType, nullable: false })
   type: MessageType;
