@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
 
 export interface AppError {
@@ -7,19 +8,19 @@ export interface AppError {
   externalServiceError?: ExternalServiceError;
 }
 
-interface ExternalServiceError {
+export interface ExternalServiceError {
   service: ExternalServices;
   message: string;
   httpCode: HttpStatusCode;
 }
 
-enum ExternalServices {
+export enum ExternalServices {
   GOOGLE_STORAGE = 'GOOGLE_STORAGE',
   WHATSSAP = 'WHATSSAP',
   NOTION = 'NOTION',
 }
 
-export abstract class MainAppError extends Error implements AppError {
+export abstract class MainAppError extends HttpException implements AppError {
   public readonly httpCode: HttpStatusCode;
   public readonly httpTrace: string;
   public readonly externalServiceError?: ExternalServiceError;
@@ -30,14 +31,18 @@ export abstract class MainAppError extends Error implements AppError {
     httpTrace: string,
     externalServiceError?: ExternalServiceError,
   ) {
-    super(message);
-    this.httpCode = httpCode;
-    this.externalServiceError = externalServiceError;
-    this.name = this.constructor.name;
-    this.httpTrace = httpTrace;
+    super(
+      {
+        message,
+        httpTrace,
+        httpCode,
+        externalServiceError,
+      },
+      httpCode,
+    );
 
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
-    }
+    this.httpCode = httpCode;
+    this.httpTrace = httpTrace;
+    this.externalServiceError = externalServiceError;
   }
 }
