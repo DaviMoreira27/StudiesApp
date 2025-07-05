@@ -39,10 +39,7 @@ export class MessagingService {
   async processWhatsAppMessage(payload: WhatsAppWebhookPayloadDTO) {
     const message = await this.mapMessage(payload);
 
-    console.log('MESSAGE', message);
-
     const blocking = await this.blockingDuplicatedMessages(message.metaMessageId);
-    console.log('BLOCKING', blocking)
     if (blocking) {
       console.log('Message already processed');
       return;
@@ -69,8 +66,6 @@ export class MessagingService {
         contact: { meta_contact_id: message.phoneNumber },
       },
     });
-
-    console.log('ACTIVES', getActiveConversations);
 
     if (getActiveConversations && getActiveConversations?.status === ConversationStatus.STARTED) {
       getActiveConversations.status = ConversationStatus.ONGOING;
