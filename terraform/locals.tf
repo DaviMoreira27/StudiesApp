@@ -1,6 +1,7 @@
 locals {
-  region = "us-east-1"
-  az1 = "us-east-1a"
-  az2 = "us-east-1b"
-
+  project_name = "studies-app"
+  az_to_index = {
+    for i, az in var.availability_zones : az => i
+  }
 }
+
