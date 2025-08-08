@@ -99,7 +99,7 @@ resource "aws_eip" "main" {
 }
 
 resource "aws_nat_gateway" "main_ngat" {
-  for_each = aws_subnet.private
+  for_each = aws_subnet.public
 
   allocation_id = aws_eip.main[each.key].id
   subnet_id     = aws_subnet.public[each.key].id
@@ -134,4 +134,106 @@ resource "aws_route_table_association" "private" {
 
   route_table_id = aws_route_table.private[each.key].id
   subnet_id      = aws_subnet.private[each.key].id
+}
+
+resource "aws_network_acl" "public" {
+  vpc_id = aws_vpc.main.id
+
+  egress {
+    protocol   = "-1"
+    rule_no    = 10
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+  }
+
+  # HTTP
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 20
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+
+  # HTTPS
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 30
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+
+  # Connection Response
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 40
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  tags = {
+    Name        = "${local.project_name}-nacl-public"
+    Environment = var.environment
+  }
+}
+
+resource "aws_network_acl_association" "public-association" {
+  for_each = aws_subnet.public
+
+  subnet_id      = each.value.id
+  network_acl_id = aws_network_acl.public.id
+}
+
+resource "aws_network_acl" "private" {
+  vpc_id = aws_vpc.main.id
+
+  egress {
+    protocol   = "-1" # All protocols
+    rule_no    = 50
+    action     = "allow"
+    cidr_block = "0.0.0.0/0" # We can send traffic for whatever ip in the network
+  }
+
+  /*
+    NACLs are stateless, meaning they do not keep track of which requests were sent.
+    It is necessary to open all the high ports because of how TCP and UDP work.
+
+    For these two protocols, when a request is initiated, we need to define a source 
+    address consisting of an IP and a port. The IP is determined by your network 
+    configuration, while the port is chosen automatically by the operating system. This 
+    port is usually a random high-numbered port (ephemeral port), because if we always 
+    used the same port, conflicts would occur.
+
+    So, the source address is IP:RANDOM_PORT and the request is sent to the server at 
+    SERVER_IP:FIXED_PORT (for example, port 443 for HTTPS). When the server responds, 
+    the addresses are reversed: the response is sent from SERVER_IP:FIXED_PORT to 
+    YOUR_IP:RANDOM_PORT_USED.
+  */
+
+  ingress {
+    protocol   = "-1"
+    rule_no    = 60
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+
+  tags = {
+    Name        = "${local.project_name}-nacl-private"
+    Environment = var.environment
+  }
+}
+
+resource "aws_network_acl_association" "private-association" {
+  for_each = aws_subnet.private
+
+  subnet_id      = each.value.id
+  network_acl_id = aws_network_acl.private.id
 }
