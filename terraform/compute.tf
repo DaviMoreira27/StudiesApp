@@ -117,3 +117,9 @@ resource "aws_instance" "database_instance" {
     AvailabilityZone = each.key
   }
 }
+
+
+/*
+    ACL, SECURITY GROUPS, SSH, API GATEWAY ECR
+*/
+

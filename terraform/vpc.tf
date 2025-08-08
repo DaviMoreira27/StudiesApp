@@ -144,6 +144,8 @@ resource "aws_network_acl" "public" {
     rule_no    = 10
     action     = "allow"
     cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
   }
 
   # HTTP
@@ -197,6 +199,8 @@ resource "aws_network_acl" "private" {
     rule_no    = 50
     action     = "allow"
     cidr_block = "0.0.0.0/0" # We can send traffic for whatever ip in the network
+    from_port  = 0
+    to_port    = 0
   }
 
   /*
@@ -222,6 +226,24 @@ resource "aws_network_acl" "private" {
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
     to_port    = 65535
+  }
+
+  egress {
+    protocol   = "-1"
+    rule_no    = 70
+    action     = "deny"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 5430
+    to_port    = 5435
+  }
+
+  egress {
+    protocol   = "-1"
+    rule_no    = 80
+    action     = "allow"
+    cidr_block = aws_vpc.main.cidr_block
+    from_port  = 5430
+    to_port    = 5435
   }
 
 
