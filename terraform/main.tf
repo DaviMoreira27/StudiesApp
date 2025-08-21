@@ -24,6 +24,17 @@ module "compute" {
 
 module "storage" {
   source = "./modules/aws-storage"
+
+  environment = var.environment
+  region = var.region
+}
+
+module "iam" {
+  source = "./modules/aws-iam"
+
+  ecr_repository_name = module.compute.ecr_repo_name
+  environment = var.environment
+  region = var.region
 }
 
 module "k8s" {
