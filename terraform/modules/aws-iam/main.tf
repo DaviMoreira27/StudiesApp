@@ -180,4 +180,4 @@ resource "aws_iam_role_policy_attachment" "ecr_push_role_attachment" {
   policy_arn = data.aws_iam_policy.ecr_push_policy.arn
 }
 
-// TODO: configure ArgoCD role
+// TODO: #12 configure ArgoCD role
