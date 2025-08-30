@@ -35,6 +35,8 @@ module "iam" {
   ecr_repository_name = module.compute.ecr_repo_name
   environment = var.environment
   region = var.region
+  circle_ci_project_id = var.circle_ci_project_id
+  circle_ci_org_id = var.circle_ci_org_id
 }
 
 module "k8s" {

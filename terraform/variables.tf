@@ -20,3 +20,13 @@ variable "base_cidr_block" {
   type    = string
   default = "10.0.0.0/16"
 }
+
+variable "circle_ci_project_id" {
+  type    = string
+  sensitive = true
+}
+
+variable "circle_ci_org_id" {
+  type    = string
+  sensitive = true
+}
