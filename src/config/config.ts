@@ -4,11 +4,11 @@ export default () => ({
   // SERVER
   environment: getEnv(process.env.NODE_ENV),
   port: parseInt(process.env.PORT || '3000', 10),
-  
+
   // WHATSAPP
   whatsappVerifyToken: process.env.WHATSAPP_VERIFY_TOKEN ?? 'APPLE',
   whatsappAccessToken: process.env.WHATSSAP_ACCESS_TOKEN ?? 'BANANA',
-  
+
   // GOOGLE
   googleBucket: getBucket(getEnv(process.env.NODE_ENV)),
   googleAccountCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS ?? '',
@@ -21,6 +21,10 @@ export default () => ({
   databaseName: process.env.DATABASE_NAME || 'test',
   databaseSync: process.env.DATABASE_SYNCHRONIZE === 'true',
   databaseLogging: process.env.DATABASE_LOGGING === 'true',
+
+  // AWS
+  accessKey: process.env.AWS_ACCESS_KEY || '',
+  secretKey: process.env.AWS_ACCESS_KEY || '',
 });
 
 function getEnv(environment?: string) {

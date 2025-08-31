@@ -96,7 +96,6 @@ describe('GoogleStorageService', () => {
     */
 
     const module: TestingModule = await Test.createTestingModule({
-      // imports: [HttpModule],
       providers: [
         GoogleStorageService,
         { provide: ConfigService, useValue: configServiceMock },

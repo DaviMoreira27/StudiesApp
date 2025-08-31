@@ -13,6 +13,7 @@ import { Contacts } from './database/entities/contact.entity';
 import { Conversations } from './database/entities/conversation.entity';
 import { Messages } from './database/entities/message.entity';
 import { MessagingModule } from './facade/messaging/messaging.module';
+import { AmazonS3Module } from './integration/amazon-s3/amazon-s3.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { MessagingModule } from './facade/messaging/messaging.module';
       }),
     }),
     MessagingModule,
+    AmazonS3Module,
   ],
   controllers: [MessageController],
   providers: [NotionService, MessagingService, StorageService, NotesService],
