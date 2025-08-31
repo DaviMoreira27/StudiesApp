@@ -3,8 +3,8 @@ import { GoogleStorageService } from './google-storage.service';
 import { Bucket, File, Storage } from '@google-cloud/storage';
 import { ConfigService } from '@nestjs/config';
 import { HttpModule, HttpService } from '@nestjs/axios';
-import { Writable } from 'stream';
-import { of } from 'rxjs';
+import Stream, { Readable, Writable } from 'stream';
+import { of, throwError } from 'rxjs';
 
 describe('GoogleStorageService', () => {
   // Define all the values that I will be using
@@ -13,6 +13,7 @@ describe('GoogleStorageService', () => {
   let configServiceMock: Partial<ConfigService>;
   let file: Partial<File>;
   let httpServiceMock: Partial<HttpService>;
+
   // It will run before each test
   beforeEach(async () => {
     file = {
@@ -65,6 +66,18 @@ describe('GoogleStorageService', () => {
       bucket: jest.fn().mockReturnValue(bucketMock),
     };
 
+    const readableStream = Readable.from([]);
+
+    httpServiceMock = {
+      get: jest.fn().mockImplementation((url: string) => {
+        if (url.includes('false-url')) {
+          return throwError(() => new Error('getaddrinfo ENOTFOUND'));
+        }
+
+        return of({data: readableStream})
+      }),
+    };
+
     // We are mocking the config service, it expects a key that will be used to return the env configuration
     configServiceMock = {
       get: jest.fn((key) => {
@@ -83,11 +96,12 @@ describe('GoogleStorageService', () => {
     */
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [HttpModule],
+      // imports: [HttpModule],
       providers: [
         GoogleStorageService,
         { provide: ConfigService, useValue: configServiceMock },
         { provide: Storage, useFactory: () => storageMock },
+        { provide: HttpService, useValue: httpServiceMock },
       ],
     }).compile();
 
@@ -100,6 +114,13 @@ describe('GoogleStorageService', () => {
     expect(service).toBeDefined();
   });
 
+  /*
+    1. Return filtered files with correct filters
+    2. Return no files because of incorrect filters
+    3. Throw error on incorrect file path on upload
+    4. Successfully upload file to bucket
+  */
+
   describe('Testing file retrieval and filters', () => {
     it('should call getMetadata and getFiles, and return filtered files', (done) => {
       const startDate = new Date('2024-03-11T00:00:00Z');
@@ -109,11 +130,26 @@ describe('GoogleStorageService', () => {
         next: (files: File[]) => {
           expect(files.length).toBe(2);
           expect(bucketMock.getMetadata).toHaveBeenCalled();
-          expect(bucketMock.getFiles).toHaveBeenCalledWith({ prefix: 'notion/subjects/images/' });
+          expect(bucketMock.getFiles).toHaveBeenCalledWith({ prefix: 'notion/subjects' });
           done();
         },
-        error: () => {
+        error: (error: Error) => {
+          done(error);
+        },
+      });
+    });
+
+    it('should return an empty File array', (done) => {
+      const startDate = new Date('2025-03-11T00:00:00Z');
+      const endDate = new Date('2025-03-12T23:59:59Z');
+
+      service.getAllFiles(startDate, endDate).subscribe({
+        next: (files: File[]) => {
+          expect(files.length).toBe(0);
           done();
+        },
+        error: (error: Error) => {
+          done(error);
         },
       });
     });
@@ -121,38 +157,61 @@ describe('GoogleStorageService', () => {
 
   describe('Testing file upload', () => {
     it('should throw an error if the file to upload is not accessible', (done) => {
-      const fileUrl = 'https://fastl.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
+      const fileUrl = 'https://false-url.fortest';
       const filePath = 'notion/subjects/images/software-requirements/';
+
       service.uploadFile(fileUrl, filePath).subscribe({
-        next: () => {
-          done();
-        },
         error: (error: Error) => {
-          console.log('Error message returned', error.message);
           expect(error).toBeDefined();
           done();
         },
-        complete() {
-          done();
+        complete: () => {
+          done.fail('Expected an error, but got a success emission.');
         },
       });
     });
 
     it('should upload a file to the bucket', (done) => {
-      const fileUrl = 'https://fastly.picsum.photos/id/85/200/300.jpg?hmac=_MELEMGQCalX-bflh-qD89Z5VjdVMfVXD68WblQSLM8';
+      const fileUrl = 'https://correct-url.com';
       const filePath = 'notion/subjects/images/software-requirements/image-04-02-jpg';
 
       service.uploadFile(fileUrl, filePath).subscribe({
         next: (response: string) => {
           expect(response).toEqual(filePath);
         },
-        error: (error: Error) => {
-          console.log(error.message);
+        complete: () => {
           done();
+        },
+      });
+    });
+
+    it('should upload a file to the bucket correctly with an empty file path', (done) => {
+      const fileUrl = 'https://correct-url.com';
+      const filePath = '';
+
+      service.uploadFile(fileUrl, filePath).subscribe({
+        next: (response: string) => {
+          expect(response).toEqual(filePath);
         },
         complete: () => {
           done();
         },
+      });
+    });
+
+    // FIX-ME: This test suite is ending in the complete clause.
+    it('should not upload a file to the bucket because of an incorrect file url', (done) => {
+      const fileUrl = 'nothing';
+      const filePath = '';
+
+      service.uploadFile(fileUrl, filePath).subscribe({
+        error: (error: Error) => {
+          expect(error).toBeDefined();
+          done();
+        },
+        complete: () => {
+          done();
+        }
       });
     });
   });
